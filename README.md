@@ -1,0 +1,144 @@
+# dsh-task-pet
+
+给 DeepSeek Harness 用的桌面宠物：一只**浮在所有窗口最上层**的像素角色，实时显示当前任务在做什么（思考 / 跑工具 / 写回答 / 完成 / 出错），任务一结束立刻撒花 + 提示音。
+
+角色不绑定某一只宠物：任何人都可以放入自己的像素角色，也可以让 AI 生成后按皮肤格式导入。
+
+![执行中](docs/pet-working.png)
+![完成](docs/pet-success.png)
+
+## 功能
+
+- **实时状态**：从 Host 已提交的会话事件（`session/event`）折叠出 turn / tool / todo / title 状态，350ms 轮询本地回环；不读取消息正文。
+- **完成即提醒**：turn 结束立刻跳跃撒花（可选提示音），完成气泡默认停留 6 秒，可在设置里调。
+- **独立设置页**：设置 → **桌面宠物**（与「模型」「账号与余额」并列），可切换角色、调大小、静音、设置完成气泡时长；保存只重启宠物进程，**不重启 DSH 会话**。
+- **角色库**：内置原创占位角色；用户角色放在 `~/.dsh/dsh-task-pet/characters/<id>/`，支持每个状态单独配图、逐帧动画、单独音效。
+- **桌面交互**：拖动移动、滚轮/双指滑动缩放、单击唤回 DSH、右键菜单（大小 / 移动 / 静音 / 隐藏 / 退出）。
+- **不抢焦点**：非激活浮动面板 + 透明区域点击穿透；点宠物不会把键盘焦点从 DSH 抢走。
+- **隐私**：宠物状态只在本机回环传递（127.0.0.1 + 随机 token），设置接口走 DSH 自身连接鉴权，不上传任何对话内容。
+
+## 安装
+
+前置：macOS 13+、Apple Silicon、Xcode / Command Line Tools（编译原生宠物需要 Swift）。
+
+```bash
+git clone <this-repo> dsh-task-pet
+cd dsh-task-pet
+
+# 1. 编译原生宠物（仓库已带 arm64 构建；改过 pet/main.swift 才需要重编）
+./pet/build.sh
+
+# 2. 安装到 DSH profile（任选其一）
+#    a) 在 DSH 里让 AI 调用 plugin_manager：
+#       install_bundle target=/绝对路径/dsh-task-pet
+#    b) 命令行：
+dsh plugin --profile desktop add link:/绝对路径/dsh-task-pet
+```
+
+安装或更新后，**完整退出并重启一次 DSH 桌面端**，浏览器端模块才会载入（只刷新页面不够）。重启不会丢会话，宠物会自动回来。
+
+安装后检查：
+
+- 设置里出现「桌面宠物」页 = 已生效；
+- `~/.dsh/dsh-task-pet/bridge.json`（端口 / token，权限 600）；
+- `~/.dsh/dsh-task-pet/settings.json`（偏好）；
+- 若宠物没出现：`ps aux | grep dsh-task-pet`，或临时用 `DSH_TASK_PET_DISABLE=1` 启动 DSH 排查。
+
+## 角色格式
+
+一个角色就是一个文件夹：
+
+```
+~/.dsh/dsh-task-pet/characters/my-pet/
+  skin.json
+  idle.png
+  working.png
+  win1.png win2.png ...
+  msg.mp3
+```
+
+```jsonc
+{
+  "name": "我的宠物",
+  "author": "你的名字",
+  "license": "CC0",
+  "states": {
+    "idle":     { "sprite": "idle.png" },
+    "thinking": { "sprite": "idle.png" },
+    "working":  { "sprite": "working.png" },
+    "success":  { "frames": ["win1.png", "win2.png"], "fps": 10, "sound": "msg.mp3" },
+    "error":    { "sprite": "working.png" }
+    // 未配置的状态回退到 idle；thinking/streaming/aborted/sleep/disconnected 都可以单独配
+  }
+}
+```
+
+- 图片用透明 PNG 像素图；App 用最近邻整数倍放大，保持像素锐利。
+- 文件路径必须留在角色文件夹内（Host 会拒绝越界路径和逃逸符号链接）。
+- 音效只在该状态进入时播放，支持 mp3 / wav 等。
+- 放好文件夹后，在设置页点「刷新角色列表」→ 选中 → 保存。
+
+桌面端右键菜单里的 **获取宠物素材** 可以打开素材站、复制"给 AI 的安装指令"；把指令粘给 Agent，它就能按上面格式帮你装角色。**素材版权请自行确认，只使用你有权使用的图片和音效。**
+
+## 设置页
+
+「桌面宠物」页包含：
+
+| 区块 | 内容 |
+| --- | --- |
+| 我的角色 | 已安装角色列表 + 预览图，点击选择 |
+| 显示与提醒 | 角色大小（1–6×）、完成提示音开关、完成气泡停留秒数 |
+| 添加自己的角色 | 角色目录路径、复制给 AI 的安装指令、打开素材站 |
+| 状态 | 宠物是否运行、当前平台、启动错误 |
+
+保存会短暂重启宠物（约 1 秒），DSH 会话、对话和正在跑的任务都不受影响。
+
+## 拖动 / 缩放 / 菜单
+
+| 操作 | 效果 |
+| --- | --- |
+| 拖动宠物 | 移动位置，自动记住（重启后恢复，多屏自动校正） |
+| 在宠物上滚动滚轮 / 双指上下滑动 | 逐级放大缩小（1–6 倍像素倍率） |
+| 右键 → 大小 / 移动 / 复位位置 | 菜单兜底 |
+| 右键 → 静音 / 隐藏 15 分钟 / 退出宠物 | 见菜单 |
+| 单击 | 把 DeepSeek Harness 唤到前台 |
+| 双指捏合 | macOS 只把 magnify 手势派给当前激活窗口，非激活浮层通常收不到；用滚动或菜单缩放 |
+
+诊断：`~/.dsh/dsh-task-pet/pet.log` 记录启动、点击、拖动、缩放事件（本地、滚动截断）。
+
+另外，插件在桌面端窗口最顶部加了一条 10px 透明拖拽条，便于拖动 DSH 主窗口（官方只标记了少数区域）。该模块属于浏览器端，安装后需完整重启 DSH 才载入。
+
+## 工作方式
+
+```
+DSH Host
+  └─ dsh-task-pet (index.js)
+       ├─ 监听 session/event · agent/status（只读，绝不 resume Agent）
+       ├─ lib/fold.js 折叠出宠物状态
+       ├─ 回环 HTTP 状态桥（token 校验）
+       ├─ 设置 API：/api/dsh-task-pet/{info,preview,settings,restart}
+       │    └─ 由 ctx.connection.requestRejection 做同源/凭据校验
+       └─ 拉起原生宠物进程，卸载时结束
+              ▲ 350ms 轮询
+  dsh-task-pet（pet/main.swift，macOS AppKit，bin/ 下）
+```
+
+## 测试
+
+```bash
+npm test     # 15 项：事件折叠 + 设置存储/校验/并发/路径穿越
+```
+
+## 已知限制与后续
+
+- 目前只提供 **macOS arm64** 原生二进制；Intel / Windows / Linux 暂无外壳（Host 侧桥接仍可运行）。
+- 还没有网页上传角色：当前通过文件夹放入。后续可以加导入接口和公共角色仓库。
+- 角色素材版权由使用者负责；仓库默认只带原创占位角色。
+- 尚未验证：全新机器从零安装、重启后自动拉起、签名/公证分发。
+- `skins/` 是个人自用角色（不进发布包）。
+
+## 发布
+
+源码放 GitHub 即可，别人让 AI 读 README 就能本地安装。npm 发布是可选项：注册 npm 账号后 `npm publish --access public`，别人可用包名安装；目前没有 npm 账号，先走 GitHub + `link:` 安装。
+
+English: a floating pixel desktop pet for DeepSeek Harness with live task status, a dedicated **Settings → Desktop Pet** page, and a drop-in character format (`~/.dsh/dsh-task-pet/characters/<id>/skin.json`). macOS Apple Silicon only for now; install from a local clone with `plugin_manager install_bundle` or `dsh plugin --profile desktop add link:<path>`.

@@ -1,0 +1,6 @@
+node_modules/
+.DS_Store
+*.tmp
+*.log
+# personal / copyrighted characters are never committed
+skins/

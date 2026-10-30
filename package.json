@@ -1,0 +1,42 @@
+{
+  "name": "dsh-task-pet",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Custom pixel desktop companions with real-time DeepSeek Harness task status and a dedicated settings page.",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./client": "./client.js"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "lib",
+    "pet",
+    "bin",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "build:pet": "pet/build.sh",
+    "start:pet": "bin/dsh-task-pet --skin pet/assets"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-settings-general"
+      ]
+    }
+  }
+}

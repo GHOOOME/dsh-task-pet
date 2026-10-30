@@ -1,0 +1,5 @@
+# Bundle patch: the single Host row this package contributes.
+# The row mounts the loopback state bridge and spawns the native pet.
+- insert:
+    - id: task-pet
+      name: 'dsh-task-pet'

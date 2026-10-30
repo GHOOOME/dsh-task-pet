@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Greninja task pet">
+  <defs>
+    <linearGradient id="gpBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b3a8f"/>
+      <stop offset="1" stop-color="#2fbfd8"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="15" fill="url(#gpBg)"/>
+  <path d="M32 12l4 8 9-3-4 8 8 4-8 4 4 8-9-3-4 8-4-8-9 3 4-8-8-4 8-4-4-8 9 3z" fill="#eaf6ff" opacity="0.22"/>
+  <path d="M20 22c4-4 9-5 12-2 3-3 8-2 12 2 3 3 4 8 1 12-3 5-8 8-13 8s-10-3-13-8c-3-4-2-9 1-12z" fill="#2b4fd8"/>
+  <path d="M23 27l6 2-6 3z" fill="#ff5a7a"/>
+  <path d="M41 27l-6 2 6 3z" fill="#ff5a7a"/>
+  <path d="M27 38c3 2 7 2 10 0-2 5-8 5-10 0z" fill="#f3d7a2"/>
+  <path d="M32 42c2 0 3 2 3 4h-6c0-2 1-4 3-4z" fill="#f3d7a2" opacity="0.85"/>
+  <path d="M12 46l3 6 6 3-6 3-3 6-3-6-6-3 6-3z" fill="#8ff0ff"/>
+</svg>

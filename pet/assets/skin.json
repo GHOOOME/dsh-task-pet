@@ -1,0 +1,33 @@
+{
+  "name": "蓝忍蛙（内置占位素材）",
+  "version": 1,
+  "states": {
+    "idle": {
+      "sprite": "frog.png"
+    },
+    "thinking": {
+      "sprite": "frog.png"
+    },
+    "working": {
+      "sprite": "frog.png"
+    },
+    "streaming": {
+      "sprite": "frog.png"
+    },
+    "success": {
+      "sprite": "frog.png"
+    },
+    "error": {
+      "sprite": "frog.png"
+    },
+    "aborted": {
+      "sprite": "frog.png"
+    },
+    "sleep": {
+      "sprite": "frog.png"
+    },
+    "disconnected": {
+      "sprite": "frog.png"
+    }
+  }
+}
