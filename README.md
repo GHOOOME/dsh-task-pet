@@ -46,11 +46,18 @@ dsh plugin --profile desktop add link:/绝对路径/dsh-task-pet
 
 ## 内置角色
 
-仓库自带 6 个像素卫兵（`guard-01` … `guard-06`），放在 `pet/characters/`：
+仓库自带 **11 个 CC0（公共领域）角色**，放在 `pet/characters/`，首次启动时自动复制到 `~/.dsh/dsh-task-pet/characters/`（已存在的目录不会被覆盖，方便用户改图）：
 
-- 来源：[OpenGameArt — Town Guards Vol.1](https://opengameart.org/content/town-guards-vol1-%E2%80%94-5-characters-down-direction-sample-64px)
-- 许可：**CC0 1.0（公共领域）**，允许随插件再分发；来源记录见 [pet/characters/ATTRIBUTION.md](pet/characters/ATTRIBUTION.md)
-- 首次启动时 Host 会把它们复制到 `~/.dsh/dsh-task-pet/characters/`；已存在的角色目录不会被覆盖，方便用户改图。
+| id | 名称 | 来源（均为 OpenGameArt，CC0 1.0） |
+| --- | --- | --- |
+| `guard-01` … `guard-06` | 卫兵 01–06 | [Town Guards Vol.1](https://opengameart.org/content/town-guards-vol1-%E2%80%94-5-characters-down-direction-sample-64px) |
+| `a-zelda-boy-1` | 红衫剑士 | [ArMM1998 — Zelda-like tilesets and sprites](https://opengameart.org/content/zelda-like-tilesets-and-sprites) |
+| `a-necromancer-2` | 紫袍法师 | [Disthron — Mr. Necromancer Man](https://opengameart.org/content/mr-necromancer-man-animated) |
+| `b-fumiko-fencer` | 绯红剑士 | [skoam — Fumiko Complete Charset](https://opengameart.org/content/fumiko-complete-charset) |
+| `b-ars-notoria-monk` | 白袍行者 | [Balmer — Hero spritesheets (Ars Notoria)](https://opengameart.org/content/hero-spritesheets-ars-notoria) |
+| `b-gothic-hunter` | 暮色猎手 | [ansimuz — Gothicvania Cemetery Pack](https://opengameart.org/content/gothicvania-cemetery-pack) |
+
+完整来源与提取说明见 [pet/characters/ATTRIBUTION.md](pet/characters/ATTRIBUTION.md) 及各角色目录下的 `SOURCE.md`。
 
 也可以继续使用内置的原创占位蛙（`pet/assets`，id 为 `default`）。
 

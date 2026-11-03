@@ -1,0 +1,74 @@
+{
+  "name": "红衫剑士",
+  "author": "ArMM1998",
+  "license": "CC0",
+  "source": "https://opengameart.org/content/zelda-like-tilesets-and-sprites",
+  "states": {
+    "idle": {
+      "frames": [
+        "idle_0.png",
+        "idle_1.png",
+        "idle_2.png",
+        "idle_3.png"
+      ],
+      "fps": 4
+    },
+    "thinking": {
+      "frames": [
+        "idle_0.png",
+        "idle_1.png",
+        "idle_2.png",
+        "idle_3.png"
+      ],
+      "fps": 4
+    },
+    "working": {
+      "frames": [
+        "work_0.png",
+        "work_1.png",
+        "work_2.png",
+        "work_3.png"
+      ],
+      "fps": 8
+    },
+    "streaming": {
+      "frames": [
+        "work_0.png",
+        "work_1.png",
+        "work_2.png",
+        "work_3.png"
+      ],
+      "fps": 6
+    },
+    "success": {
+      "frames": [
+        "win_0.png",
+        "win_1.png",
+        "win_2.png",
+        "win_3.png"
+      ],
+      "fps": 10
+    },
+    "error": {
+      "frames": [
+        "err_0.png",
+        "err_1.png",
+        "err_2.png",
+        "err_3.png"
+      ],
+      "fps": 6
+    },
+    "sleep": {
+      "frames": [
+        "idle_0.png"
+      ],
+      "fps": 1
+    },
+    "disconnected": {
+      "frames": [
+        "err_0.png"
+      ],
+      "fps": 2
+    }
+  }
+}

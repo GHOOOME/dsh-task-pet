@@ -1,0 +1,42 @@
+{
+  "name": "暮色猎手",
+  "author": "ansimuz",
+  "license": "CC0",
+  "source": "https://opengameart.org/content/gothicvania-cemetery-pack",
+  "states": {
+    "idle": {
+      "frames": [
+        "idle_0.png",
+        "idle_1.png",
+        "idle_2.png",
+        "idle_3.png"
+      ],
+      "fps": 6
+    },
+    "working": {
+      "frames": [
+        "working_0.png",
+        "working_1.png",
+        "working_2.png",
+        "working_3.png",
+        "working_4.png"
+      ],
+      "fps": 8
+    },
+    "success": {
+      "frames": [
+        "success_0.png",
+        "success_1.png",
+        "success_2.png",
+        "success_3.png"
+      ],
+      "fps": 6
+    },
+    "error": {
+      "frames": [
+        "error_0.png"
+      ],
+      "fps": 4
+    }
+  }
+}

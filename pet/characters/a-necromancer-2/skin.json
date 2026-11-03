@@ -1,0 +1,75 @@
+{
+  "name": "紫袍法师",
+  "author": "Disthron",
+  "license": "CC0",
+  "source": "https://opengameart.org/content/mr-necromancer-man-animated",
+  "states": {
+    "idle": {
+      "frames": [
+        "idle_0.png",
+        "idle_1.png",
+        "idle_2.png",
+        "idle_3.png"
+      ],
+      "fps": 5
+    },
+    "thinking": {
+      "frames": [
+        "idle_0.png",
+        "idle_1.png",
+        "idle_2.png",
+        "idle_3.png"
+      ],
+      "fps": 5
+    },
+    "working": {
+      "frames": [
+        "work_0.png",
+        "work_1.png",
+        "work_2.png",
+        "work_3.png",
+        "work_4.png",
+        "work_5.png"
+      ],
+      "fps": 10
+    },
+    "streaming": {
+      "frames": [
+        "work_0.png",
+        "work_1.png",
+        "work_2.png",
+        "work_3.png",
+        "work_4.png",
+        "work_5.png"
+      ],
+      "fps": 8
+    },
+    "success": {
+      "frames": [
+        "win_0.png",
+        "win_1.png",
+        "win_2.png",
+        "win_3.png"
+      ],
+      "fps": 10
+    },
+    "error": {
+      "frames": [
+        "err_0.png"
+      ],
+      "fps": 2
+    },
+    "sleep": {
+      "frames": [
+        "idle_0.png"
+      ],
+      "fps": 1
+    },
+    "disconnected": {
+      "frames": [
+        "err_0.png"
+      ],
+      "fps": 2
+    }
+  }
+}

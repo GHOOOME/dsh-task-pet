@@ -1,0 +1,37 @@
+{
+  "name": "绯红剑士",
+  "author": "skoam",
+  "license": "CC0",
+  "source": "https://opengameart.org/content/fumiko-complete-charset",
+  "states": {
+    "idle": {
+      "frames": [
+        "idle_0.png",
+        "idle_1.png",
+        "idle_2.png"
+      ],
+      "fps": 6
+    },
+    "working": {
+      "frames": [
+        "working_0.png",
+        "working_1.png",
+        "working_2.png",
+        "working_3.png"
+      ],
+      "fps": 8
+    },
+    "success": {
+      "frames": [
+        "success_0.png"
+      ],
+      "fps": 6
+    },
+    "error": {
+      "frames": [
+        "error_0.png"
+      ],
+      "fps": 4
+    }
+  }
+}
