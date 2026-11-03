@@ -31,7 +31,7 @@
 前置：macOS 13+、Apple Silicon、Xcode / Command Line Tools（编译原生宠物需要 Swift）。
 
 ```bash
-git clone https://github.com/GHOOOME/dsh-greninja-pet.git
+git clone https://github.com/GHOOOME/dsh-task-pet.git
 cd dsh-greninja-pet
 
 # 仓库已带 arm64 构建；改过 pet/main.swift 才需要重新编译
