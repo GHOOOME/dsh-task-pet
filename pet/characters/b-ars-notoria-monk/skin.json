@@ -34,5 +34,20 @@
       ],
       "fps": 3
     }
+  },
+  "effects": {
+    "working": {
+      "frames": [
+        "fx_ring_0.png",
+        "fx_ring_1.png",
+        "fx_ring_2.png",
+        "fx_ring_3.png",
+        "fx_ring_4.png",
+        "fx_ring_5.png"
+      ],
+      "fps": 12,
+      "anchor": "right",
+      "scale": 1.4
+    }
   }
 }

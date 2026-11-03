@@ -33,5 +33,20 @@
       ],
       "fps": 4
     }
+  },
+  "effects": {
+    "working": {
+      "frames": [
+        "fx_petal_0.png",
+        "fx_petal_1.png",
+        "fx_petal_2.png",
+        "fx_petal_3.png",
+        "fx_petal_4.png",
+        "fx_petal_5.png"
+      ],
+      "fps": 8,
+      "anchor": "right",
+      "scale": 1.5
+    }
   }
 }

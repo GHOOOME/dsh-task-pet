@@ -38,5 +38,20 @@
       ],
       "fps": 4
     }
+  },
+  "effects": {
+    "working": {
+      "frames": [
+        "fx_wisp_0.png",
+        "fx_wisp_1.png",
+        "fx_wisp_2.png",
+        "fx_wisp_3.png",
+        "fx_wisp_4.png",
+        "fx_wisp_5.png"
+      ],
+      "fps": 8,
+      "anchor": "right",
+      "scale": 1.6
+    }
   }
 }

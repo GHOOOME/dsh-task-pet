@@ -71,5 +71,20 @@
       ],
       "fps": 2
     }
+  },
+  "effects": {
+    "working": {
+      "frames": [
+        "fx_rune_0.png",
+        "fx_rune_1.png",
+        "fx_rune_2.png",
+        "fx_rune_3.png",
+        "fx_rune_4.png",
+        "fx_rune_5.png"
+      ],
+      "fps": 10,
+      "anchor": "above",
+      "scale": 1.3
+    }
   }
 }

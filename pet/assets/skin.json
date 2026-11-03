@@ -29,5 +29,20 @@
     "disconnected": {
       "sprite": "frog.png"
     }
+  },
+  "effects": {
+    "working": {
+      "frames": [
+        "fx_bubble_0.png",
+        "fx_bubble_1.png",
+        "fx_bubble_2.png",
+        "fx_bubble_3.png",
+        "fx_bubble_4.png",
+        "fx_bubble_5.png"
+      ],
+      "fps": 8,
+      "anchor": "right",
+      "scale": 1.4
+    }
   }
 }

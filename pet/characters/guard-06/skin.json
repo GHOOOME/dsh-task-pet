@@ -68,5 +68,36 @@
       ],
       "fps": 1
     }
+  },
+  "effects": {
+    "working": {
+      "frames": [
+        "fx_spark_0.png",
+        "fx_spark_1.png",
+        "fx_spark_2.png",
+        "fx_spark_3.png",
+        "fx_spark_4.png",
+        "fx_spark_5.png"
+      ],
+      "fps": 12,
+      "anchor": "right",
+      "scale": 1.2
+    },
+    "success": {
+      "frames": [
+        "fx_chips_0.png",
+        "fx_chips_1.png",
+        "fx_chips_2.png",
+        "fx_chips_3.png",
+        "fx_chips_4.png",
+        "fx_chips_5.png"
+      ],
+      "fps": 10,
+      "anchor": "above",
+      "scale": 1.2
+    },
+    "thinking": {
+      "builtin": "dots"
+    }
   }
 }

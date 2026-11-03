@@ -70,5 +70,20 @@
       ],
       "fps": 2
     }
+  },
+  "effects": {
+    "working": {
+      "frames": [
+        "fx_slash_0.png",
+        "fx_slash_1.png",
+        "fx_slash_2.png",
+        "fx_slash_3.png",
+        "fx_slash_4.png",
+        "fx_slash_5.png"
+      ],
+      "fps": 14,
+      "anchor": "right",
+      "scale": 1.5
+    }
   }
 }

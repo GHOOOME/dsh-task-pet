@@ -57,6 +57,8 @@ dsh plugin --profile desktop add link:/绝对路径/dsh-task-pet
 | `b-ars-notoria-monk` | 白袍行者 | [Balmer — Hero spritesheets (Ars Notoria)](https://opengameart.org/content/hero-spritesheets-ars-notoria) |
 | `b-gothic-hunter` | 暮色猎手 | [ansimuz — Gothicvania Cemetery Pack](https://opengameart.org/content/gothicvania-cemetery-pack) |
 
+每个内置角色还自带**主题动效**（卫兵火花/碎石、剑士斩击、法师符文、剑士花瓣、武僧冲击环、猎手暗影、占位蛙泡泡），配置就在各自 `skin.json` 的 `effects` 字段里，可直接改。
+
 完整来源与提取说明见 [pet/characters/ATTRIBUTION.md](pet/characters/ATTRIBUTION.md) 及各角色目录下的 `SOURCE.md`。
 
 也可以继续使用内置的原创占位蛙（`pet/assets`，id 为 `default`）。
