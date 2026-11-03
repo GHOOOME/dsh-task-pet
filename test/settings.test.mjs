@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, writeFile, symlink, readFile, realpath } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { createPetSettings, validatePatch, safeImage } from '../lib/settings.js';
+import { createPetSettings, validatePatch, safeImage, seedCharacters } from '../lib/settings.js';
 import { rejectionFor } from '../lib/settings-routes.js';
 
 async function fixture() {
@@ -45,6 +45,18 @@ test('previews reject traversal, absolute paths, and escaping symlinks',async()=
  assert.equal(await safeImage(f.bundledDir,outside),undefined);
  assert.equal(await safeImage(f.bundledDir,'escape.png'),undefined);
  assert.equal(await safeImage(f.bundledDir,'sprite.png'),await realpath(join(f.bundledDir,'sprite.png')));
+});
+test('bundled characters seed once and never overwrite user edits', async()=>{
+ const root = await mkdtemp(join(tmpdir(), 'task-pet-seed-'));
+ const bundled = join(root,'bundled'), chars = join(root,'characters');
+ await mkdir(join(bundled,'guard-01'),{recursive:true});
+ await writeFile(join(bundled,'guard-01','sprite.png'),'art');
+ await writeFile(join(bundled,'guard-01','skin.json'),JSON.stringify({name:'Guard'}));
+ assert.deepEqual(await seedCharacters(bundled,chars),['guard-01']);
+ assert.equal(await readFile(join(chars,'guard-01','sprite.png'),'utf8'),'art');
+ await writeFile(join(chars,'guard-01','sprite.png'),'user edit');
+ assert.deepEqual(await seedCharacters(bundled,chars),[]);
+ assert.equal(await readFile(join(chars,'guard-01','sprite.png'),'utf8'),'user edit');
 });
 test('requests are fenced by connection trust or an equivalent origin check',()=>{
  const trusted={requestRejection:()=>undefined};

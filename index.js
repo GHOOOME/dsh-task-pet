@@ -27,7 +27,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { PetFold } from './lib/fold.js';
-import { createPetSettings } from './lib/settings.js';
+import { createPetSettings, seedCharacters } from './lib/settings.js';
 import { mountSettingsRoutes } from './lib/settings-routes.js';
 
 /** Loader-facing identity of this plugin row. */
@@ -43,6 +43,7 @@ const SETTINGS_FILE = join(DATA_DIR, 'settings.json');
 const CHARACTERS_DIR = join(DATA_DIR, 'characters');
 const BRIDGE_FILE = join(DATA_DIR, 'bridge.json');
 const BUNDLED_CHARACTER_DIR = join(PACKAGE_DIR, 'pet', 'assets');
+const BUNDLED_CHARACTERS_DIR = join(PACKAGE_DIR, 'pet', 'characters');
 const BRIDGE_VERSION = 2;
 const MAX_SPAWNS = 3;
 
@@ -288,6 +289,7 @@ export async function apply(ctx) {
 		lastError = null;
 		spawnPet();
 	};
+	await seedCharacters(BUNDLED_CHARACTERS_DIR, CHARACTERS_DIR);
 	settings = await createPetSettings({
 		file: SETTINGS_FILE, charactersDir: CHARACTERS_DIR, bundledDir: BUNDLED_CHARACTER_DIR,
 		personalDir: process.env.DSH_GRENINJA_PET_SKIN ?? join(HOME_DIR, '.dsh', 'greninja-pet', 'skin'),

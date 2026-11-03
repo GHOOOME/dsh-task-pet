@@ -1,0 +1,72 @@
+{
+  "name": "卫兵 03",
+  "author": "OpenGameArt — Town Guards Vol.1",
+  "license": "CC0",
+  "source": "https://opengameart.org/content/town-guards-vol1-%E2%80%94-5-characters-down-direction-sample-64px",
+  "states": {
+    "idle": {
+      "frames": [
+        "idle_0.png",
+        "idle_1.png",
+        "idle_2.png",
+        "idle_3.png"
+      ],
+      "fps": 4
+    },
+    "thinking": {
+      "frames": [
+        "idle_0.png",
+        "idle_1.png",
+        "idle_2.png",
+        "idle_3.png"
+      ],
+      "fps": 4
+    },
+    "working": {
+      "frames": [
+        "work_0.png",
+        "work_1.png",
+        "work_2.png",
+        "work_3.png"
+      ],
+      "fps": 8
+    },
+    "streaming": {
+      "frames": [
+        "idle_0.png",
+        "idle_1.png",
+        "idle_2.png",
+        "idle_3.png"
+      ],
+      "fps": 4
+    },
+    "success": {
+      "frames": [
+        "work_0.png",
+        "work_1.png",
+        "work_2.png",
+        "work_3.png"
+      ],
+      "fps": 8
+    },
+    "error": {
+      "frames": [
+        "idle_0.png",
+        "idle_1.png"
+      ],
+      "fps": 3
+    },
+    "sleep": {
+      "frames": [
+        "idle_0.png"
+      ],
+      "fps": 1
+    },
+    "disconnected": {
+      "frames": [
+        "idle_0.png"
+      ],
+      "fps": 1
+    }
+  }
+}

@@ -4,15 +4,15 @@
 
 角色不绑定某一只宠物：任何人都可以放入自己的像素角色，也可以让 AI 生成后按皮肤格式导入。
 
-![执行中](docs/pet-working.png)
-![完成](docs/pet-success.png)
+![内置角色·执行中](docs/pet-guard-working.png)
+![内置角色·完成](docs/pet-guard-success.png)
 
 ## 功能
 
 - **实时状态**：从 Host 已提交的会话事件（`session/event`）折叠出 turn / tool / todo / title 状态，350ms 轮询本地回环；不读取消息正文。
 - **完成即提醒**：turn 结束立刻跳跃撒花（可选提示音），完成气泡默认停留 6 秒，可在设置里调。
 - **独立设置页**：设置 → **桌面宠物**（与「模型」「账号与余额」并列），可切换角色、调大小、静音、设置完成气泡时长；保存只重启宠物进程，**不重启 DSH 会话**。
-- **角色库**：内置原创占位角色；用户角色放在 `~/.dsh/dsh-task-pet/characters/<id>/`，支持每个状态单独配图、逐帧动画、单独音效。
+- **内置角色**：6 个 CC0 授权的像素卫兵（OpenGameArt *Town Guards Vol.1*），首次启动自动复制到角色目录；用户角色放在 `~/.dsh/dsh-task-pet/characters/<id>/`，支持每个状态单独配图、逐帧动画、单独音效。
 - **桌面交互**：拖动移动、滚轮/双指滑动缩放、单击唤回 DSH、右键菜单（大小 / 移动 / 静音 / 隐藏 / 退出）。
 - **不抢焦点**：非激活浮动面板 + 透明区域点击穿透；点宠物不会把键盘焦点从 DSH 抢走。
 - **隐私**：宠物状态只在本机回环传递（127.0.0.1 + 随机 token），设置接口走 DSH 自身连接鉴权，不上传任何对话内容。
@@ -43,6 +43,16 @@ dsh plugin --profile desktop add link:/绝对路径/dsh-task-pet
 - `~/.dsh/dsh-task-pet/bridge.json`（端口 / token，权限 600）；
 - `~/.dsh/dsh-task-pet/settings.json`（偏好）；
 - 若宠物没出现：`ps aux | grep dsh-task-pet`，或临时用 `DSH_TASK_PET_DISABLE=1` 启动 DSH 排查。
+
+## 内置角色
+
+仓库自带 6 个像素卫兵（`guard-01` … `guard-06`），放在 `pet/characters/`：
+
+- 来源：[OpenGameArt — Town Guards Vol.1](https://opengameart.org/content/town-guards-vol1-%E2%80%94-5-characters-down-direction-sample-64px)
+- 许可：**CC0 1.0（公共领域）**，允许随插件再分发；来源记录见 [pet/characters/ATTRIBUTION.md](pet/characters/ATTRIBUTION.md)
+- 首次启动时 Host 会把它们复制到 `~/.dsh/dsh-task-pet/characters/`；已存在的角色目录不会被覆盖，方便用户改图。
+
+也可以继续使用内置的原创占位蛙（`pet/assets`，id 为 `default`）。
 
 ## 角色格式
 
@@ -169,7 +179,7 @@ npm test     # 15 项：事件折叠 + 设置存储/校验/并发/路径穿越
 English: a floating pixel desktop pet for DeepSeek Harness with live task status, a dedicated **Settings → Desktop Pet** page, and a drop-in character format (`~/.dsh/dsh-task-pet/characters/<id>/skin.json`). macOS Apple Silicon only for now; install from a local clone with `plugin_manager install_bundle` or `dsh plugin --profile desktop add link:<path>`.
 ## License
 
-代码与内置占位角色以 MIT 协议开源，版权归 GHOOOME 所有；详见 [LICENSE](LICENSE)。
+代码以 MIT 协议开源，版权归 GHOOOME 所有；详见 [LICENSE](LICENSE)。内置的 6 个卫兵角色来自 OpenGameArt，按其 **CC0** 授权分发（见 `pet/characters/ATTRIBUTION.md`），不适用 MIT。
 
 `skins/` 下的个人角色（含第三方版权素材）不随仓库分发，也不在 MIT 授权范围内。
 
