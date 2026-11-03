@@ -174,9 +174,19 @@ struct SkinStateMaterial: Decodable {
     let sound: String?
 }
 
+struct SkinEffectDefinition: Decodable {
+    let builtin: String?
+    let frames: [String]?
+    let fps: Double?
+    let anchor: String?
+    let scale: Double?
+    let offset: [Double]?
+}
+
 struct SkinManifest: Decodable {
     let name: String?
     let states: [String: SkinStateMaterial]?
+    let effects: [String: SkinEffectDefinition]?
 }
 
 /// One loaded skin: per-companion-state image frames (and optional per-state sound).
@@ -188,6 +198,16 @@ final class Skin {
     private(set) var stateFps: [String: Double] = [:]
     private(set) var maxWidth: CGFloat = 64
     private(set) var maxHeight: CGFloat = 64
+    private(set) var customEffects: [String: SkinCustomEffect] = [:]
+    private(set) var builtinEffects: [String: String] = [:]
+
+    struct SkinCustomEffect {
+        let frames: [NSImage]
+        let fps: Double
+        let anchor: String
+        let scale: CGFloat
+        let offset: CGPoint
+    }
     static let companionStates = [
         "idle", "thinking", "working", "streaming", "success", "error", "aborted", "sleep", "disconnected",
     ]
@@ -238,6 +258,21 @@ final class Skin {
                 }
             }
         }
+        for (state, definition) in manifest?.effects ?? [:] {
+            if let builtin = definition.builtin { builtinEffects[state] = builtin }
+            guard let frameNames = definition.frames, !frameNames.isEmpty else { continue }
+            let effectFrames = frameNames.compactMap { image($0) }
+            guard !effectFrames.isEmpty else { continue }
+            let dx = definition.offset?.first ?? 0
+            let dy = (definition.offset?.count ?? 0) > 1 ? definition.offset![1] : 0
+            customEffects[state] = SkinCustomEffect(
+                frames: effectFrames,
+                fps: definition.fps ?? 8,
+                anchor: definition.anchor ?? "right",
+                scale: CGFloat(definition.scale ?? 1),
+                offset: CGPoint(x: dx, y: dy)
+            )
+        }
     }
 
     func frames(for state: String) -> [NSImage] {
@@ -248,6 +283,8 @@ final class Skin {
         stateFps[state] ?? 8
     }
 
+    func customEffect(for state: String) -> SkinCustomEffect? { customEffects[state] }
+    func builtinEffect(for state: String) -> String? { builtinEffects[state] }
 }
 
 // MARK: - Pet view
@@ -257,7 +294,11 @@ final class PetView: NSView {
         didSet {
             if mode != oldValue {
                 modeStartedAt = CACurrentMediaTime()
-                if mode == "success" { spawnConfetti() }
+                if mode == "success" {
+                    let custom = skin?.customEffect(for: "success") != nil
+                    let builtin = skin?.builtinEffect(for: "success")
+                    if !custom && (builtin == nil || builtin == "confetti") { spawnConfetti() }
+                }
             }
         }
     }
@@ -277,6 +318,7 @@ final class PetView: NSView {
     private var isDraggingPet = false
     private var dragInProgress = false
     private var tick: Double = 0
+    private var lastSpriteRect: NSRect = .zero
     private var displayTimer: Timer?
     private var modeStartedAt: CFTimeInterval = CACurrentMediaTime()
     private var confetti: [Confetti] = []
@@ -417,6 +459,7 @@ final class PetView: NSView {
             let width = image.size.width * CGFloat(pixelScale)
             let height = image.size.height * CGFloat(pixelScale)
             let drawX = originX + (spriteAreaWidth - width) / 2
+            lastSpriteRect = NSRect(x: drawX, y: baselineY, width: width, height: height)
             image.draw(in: NSRect(x: drawX, y: baselineY, width: width, height: height),
                        from: NSRect(origin: .zero, size: image.size),
                        operation: .sourceOver,
@@ -433,25 +476,79 @@ final class PetView: NSView {
     }
 
     private func drawEffects(mode: String) {
-        let centerX = bounds.width / 2
+        guard let skin else { return }
+        if let custom = skin.customEffect(for: mode) {
+            drawCustomEffect(custom)
+            return
+        }
+        drawBuiltinEffect(skin.builtinEffect(for: mode) ?? defaultEffect(for: mode))
+    }
+
+    /// The effects every character gets when its skin says nothing.
+    private func defaultEffect(for mode: String) -> String {
         switch mode {
-        case "working":
+        case "working": return "shuriken"
+        case "thinking": return "dots"
+        case "success": return "confetti"
+        case "sleep": return "zzz"
+        case "error", "aborted": return "cross"
+        default: return "none"
+        }
+    }
+
+    private func drawBuiltinEffect(_ name: String) {
+        let centerX = bounds.width / 2
+        switch name {
+        case "shuriken":
             drawShuriken(centerX: centerX + spriteAreaWidth * 0.32,
                          centerY: 10 + spriteAreaHeight * 0.62, angle: tick * 7.0)
-        case "thinking":
+        case "dots":
             drawThoughtDots(centerX: centerX, centerY: 10 + spriteAreaHeight + 4)
-        case "success":
+        case "confetti":
             for piece in confetti {
                 piece.color.setFill()
                 NSBezierPath(rect: NSRect(x: piece.x, y: piece.y, width: piece.size, height: piece.size)).fill()
             }
-        case "sleep":
+        case "zzz":
             drawSleepZ(originX: centerX + spriteAreaWidth * 0.42, originY: 10 + spriteAreaHeight * 0.92)
-        case "error", "aborted":
+        case "cross":
             drawErrorMark(centerX: centerX - spriteAreaWidth * 0.24, centerY: 10 + spriteAreaHeight * 0.85)
         default:
             break
         }
+    }
+
+    /// Draw a skin-provided effect animation beside the character.
+    /// Anchor is relative to the character sprite; offsets are in sprite pixels.
+    private func drawCustomEffect(_ effect: Skin.SkinCustomEffect) {
+        guard !effect.frames.isEmpty else { return }
+        let frame = effect.frames[Int(tick * effect.fps) % effect.frames.count]
+        let width = frame.size.width * CGFloat(pixelScale) * effect.scale
+        let height = frame.size.height * CGFloat(pixelScale) * effect.scale
+        guard width > 0, height > 0 else { return }
+        let rect = lastSpriteRect == .zero
+            ? NSRect(x: 10, y: 10, width: spriteAreaWidth, height: spriteAreaHeight)
+            : lastSpriteRect
+        var centerX: CGFloat
+        var centerY: CGFloat
+        switch effect.anchor {
+        case "left": centerX = rect.minX - width / 2 - 2; centerY = rect.midY
+        case "above": centerX = rect.midX; centerY = rect.maxY + height / 2 + 2
+        case "below": centerX = rect.midX; centerY = rect.minY - height / 2 - 2
+        case "center": centerX = rect.midX; centerY = rect.midY
+        default: centerX = rect.maxX + width / 2 + 2; centerY = rect.midY
+        }
+        centerX += effect.offset.x * CGFloat(pixelScale)
+        centerY += effect.offset.y * CGFloat(pixelScale)
+        let margin: CGFloat = 2
+        centerX = min(max(centerX, width / 2 + margin), bounds.width - width / 2 - margin)
+        centerY = min(max(centerY, height / 2 + margin), bounds.height - height / 2 - margin)
+        frame.draw(in: NSRect(x: centerX - width / 2, y: centerY - height / 2, width: width, height: height),
+                   from: NSRect(origin: .zero, size: frame.size),
+                   operation: .sourceOver,
+                   fraction: 1,
+                   respectFlipped: false,
+                   hints: nil)
     }
 
     private func drawShuriken(centerX: CGFloat, centerY: CGFloat, angle: Double) {

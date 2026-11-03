@@ -19,7 +19,7 @@ const __taskPetFactory = (require) => {
     privacy:'仅保存本机偏好，不上传对话正文。第三方角色与音效请自行确认使用许可。',
     unknown:'未知错误', missing:'缺少 API 授权，请刷新页面。若仍失败，请重启 DSH。',
     promptGenerate:'请用你能用的生图模型或 Python/Pillow，在 {folder}/ai-pet/ 里生成一套 DSH Task Pet 角色：透明背景 PNG 像素图（32–64px，整数倍放大显示），至少包含 idle.png、working.png、success.png；创建 skin.json，写明 name、author、license（注明 AI 生成）和 states，可给 thinking/error/sleep 等状态配图。只生成原创形象，不要复刻受版权保护的角色。完成后提示我在 设置 → 桌面宠物 刷新并选择。',
-    prompt:'请帮我安装 DSH Task Pet 的自定义像素角色。只使用 CC0/CC-BY 或我有权使用的透明 PNG 与音效，不执行素材包里的代码；在 skin.json 记录 author 与 license。把角色放在 {folder}/my-pet/，创建 skin.json（name、author、license、states.idle.sprite；可给 thinking、working、streaming、success、error、aborted、sleep、disconnected 指定 sprite，或 frames 数组和 fps）。所有文件路径必须在角色文件夹内。完成后让我在 设置 → 桌面宠物 点击“刷新角色列表”、选择角色并保存。不要自动修改其他 DSH 设置。',
+    prompt:'请帮我安装 DSH Task Pet 的自定义像素角色。只使用 CC0/CC-BY 或我有权使用的透明 PNG 与音效，不执行素材包里的代码；在 skin.json 记录 author 与 license。把角色放在 {folder}/my-pet/，创建 skin.json（name、author、license、states.idle.sprite；可给 thinking、working、streaming、success、error、aborted、sleep、disconnected 指定 sprite，或 frames 数组和 fps；可选 effects 给状态配自定义动效帧或 builtin 特效）。所有文件路径必须在角色文件夹内。完成后让我在 设置 → 桌面宠物 点击“刷新角色列表”、选择角色并保存。不要自动修改其他 DSH 设置。',
    },
    en: {
     nav:'Desktop Pet', title:'DSH Task Pet', intro:'Your pixel companion, showing what the task is doing in real time.',
@@ -36,7 +36,7 @@ const __taskPetFactory = (require) => {
     privacy:'Preferences stay on this machine. Conversation text is not uploaded. Check the licenses of third-party art and sounds.',
     unknown:'Unknown error', missing:'API authorization is missing. Reload this page or restart DSH.',
     promptGenerate:'Use an image model you can access, or Python/Pillow, to generate a DSH Task Pet character in {folder}/ai-pet/: transparent PNG pixel art (32–64px, integer-scaled), at least idle.png, working.png, success.png; create skin.json with name, author, license (AI-generated) and states, optionally per-state images. Only original characters, never copyrighted ones. Then ask me to refresh Settings → Desktop Pet and select it.',
-    prompt:'Help me install a DSH Task Pet pixel character. Use only permitted transparent PNG images and sounds; never execute code from an asset pack. Put it in {folder}/my-pet/ and create skin.json (name, author, license, states.idle.sprite; optional thinking/working/streaming/success/error/aborted/sleep/disconnected sprite or frames and fps). All paths must stay inside that character folder. Then ask me to refresh Settings → Desktop Pet, select it and save. Do not alter other DSH preferences.',
+    prompt:'Help me install a DSH Task Pet pixel character. Use only permitted transparent PNG images and sounds; never execute code from an asset pack. Put it in {folder}/my-pet/ and create skin.json (name, author, license, states.idle.sprite; optional thinking/working/streaming/success/error/aborted/sleep/disconnected sprite or frames and fps; optional effects with custom animation frames or builtin effects). All paths must stay inside that character folder. Then ask me to refresh Settings → Desktop Pet, select it and save. Do not alter other DSH preferences.',
    },
   };
   const css = `

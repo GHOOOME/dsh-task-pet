@@ -88,6 +88,34 @@ dsh plugin --profile desktop add link:/绝对路径/dsh-task-pet
 - 音效只在该状态进入时播放，支持 mp3 / wav 等。
 - 放好文件夹后，在设置页点「刷新角色列表」→ 选中 → 保存。
 
+### 自定义动效（effects）
+
+![自定义动效示例](docs/pet-custom-effect.png)
+
+角色不只可以换图，还可以给每个状态配自己的动效（不写就用默认特效，老版本会忽略这个字段）：
+
+```jsonc
+{
+  "effects": {
+    // 用自定义帧动画：frames + fps，anchor 决定相对角色的位置
+    "working": { "frames": ["sparkle_0.png", "sparkle_1.png"], "fps": 10,
+                 "anchor": "right", "scale": 1.5, "offset": [2, 0] },
+    // 改用内置特效
+    "success": { "builtin": "confetti" },
+    // 关掉某个状态的特效
+    "thinking": { "builtin": "none" }
+  }
+}
+```
+
+- 优先级：自定义 `frames` > 显式 `builtin` > 默认特效。
+- `builtin` 可选：`shuriken`（手里剑）、`dots`（思考点）、`confetti`（撒花）、`zzz`（打盹）、`cross`（错误叉）、`none`。
+- `anchor`：`right`（默认）、`left`、`above`、`below`、`center`；`scale` 是相对像素倍率的倍数；`offset` 是相对角色的像素偏移。
+- 动效帧同样必须是角色文件夹内的 PNG，建议透明背景，循环播放。
+- 完整示例：[examples/custom-effects/](examples/custom-effects/)（原创 MIT 素材）。
+
+> 动效由宠物程序渲染，不是图片序列本身；所以任何角色都能用同一套配置。
+
 桌面端右键菜单里的 **获取宠物素材** 可以打开素材站、复制"给 AI 的安装指令"；把指令粘给 Agent，它就能按上面格式帮你装角色。
 
 ### 素材站怎么选
