@@ -1074,13 +1074,13 @@ final class PetApp: NSObject, NSApplicationDelegate {
     }
 
     private func openAssetSite() {
-        if let url = URL(string: "https://www.spriters-resource.com/") { NSWorkspace.shared.open(url) }
+        if let url = URL(string: "https://opengameart.org/") { NSWorkspace.shared.open(url) }
     }
 
     private func copyAssetPrompt() {
         let prompt = """
         帮我给 DSH 忍蛙桌宠安装一套自定义素材（只用于个人自用，注意素材版权）：
-        1. 打开素材网站（例如 https://www.spriters-resource.com/ 或 https://pokemondb.net/sprites ），下载透明背景的 PNG 像素图；
+        1. 打开 CC0/CC-BY 素材站（例如 https://opengameart.org/ 或 https://kenney.nl/assets ），下载透明背景的 PNG 像素图；在 skin.json 里写明 author 与 license，只使用允许再分发的素材；
         2. 保存到 ~/.dsh/greninja-pet/skin/ 目录（没有就创建），默认图命名为 idle.png；
         3. 想给每个状态单独配图时，在同目录写 skin.json，例如：
            {
