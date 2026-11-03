@@ -16,6 +16,9 @@ const __taskPetFactory = (require) => {
     refresh:'刷新角色列表', restart:'重新召唤宠物', restarted:'已重新召唤宠物。',
     materials:'添加自己的角色', materialsHint:'两条路：① 让 AI 本地生成角色（不依赖外网）；② 打开素材站下载 CC0/CC-BY 素材。把文件夹放进下面的目录后刷新列表。境外站点网络可能不稳定。',
     folder:'本机角色目录', copy:'复制给 AI 的安装指令', copied:'安装指令已复制。', website:'OpenGameArt（境外）↗', copyGenerate:'复制 AI 生成指令', copiedGenerate:'AI 生成指令已复制。', websiteCn:'国内可访问素材索引 ↗', websiteCnHint:'（第三方索引站，下载前核对 CC0/商用授权）', openFolder:'在 Finder 中打开角色目录', opened:'已在 Finder 中打开。',
+    motion:'动效展示', motionHint:'这里循环播放每个角色在执行工具时的自定义动效；没配动效的角色会使用默认手里剑。',
+    customEffect:'自定义动效', defaultEffect:'默认特效', copyMotion:'复制 AI 动效生成指令', copiedMotion:'AI 动效指令已复制。',
+    promptMotion:'请为 DSH Task Pet 的角色生成自定义动效。角色目录：{folder}/<角色 id>/。1) 用生图模型或 Python/Pillow 生成 4–8 张透明 PNG 动效帧（16–24px，循环播放，不包含角色本体），命名 fx_0.png 等；2) 在该角色的 skin.json 里加入 effects 字段，例如 {"effects":{"working":{"frames":["fx_0.png","fx_1.png"],"fps":10,"anchor":"right","scale":1.2},"success":{"builtin":"confetti"}}}；3) 不要修改 states 和精灵图，不要把文件放到角色目录外。完成后让我在 设置 → 桌面宠物 刷新，动效会显示在「动效展示」里，并在桌宠执行工具时播放。',
     privacy:'仅保存本机偏好，不上传对话正文。第三方角色与音效请自行确认使用许可。',
     unknown:'未知错误', missing:'缺少 API 授权，请刷新页面。若仍失败，请重启 DSH。',
     promptGenerate:'请用你能用的生图模型或 Python/Pillow，在 {folder}/ai-pet/ 里生成一套 DSH Task Pet 角色：透明背景 PNG 像素图（32–64px，整数倍放大显示），至少包含 idle.png、working.png、success.png；创建 skin.json，写明 name、author、license（注明 AI 生成）和 states，可给 thinking/error/sleep 等状态配图。只生成原创形象，不要复刻受版权保护的角色。完成后提示我在 设置 → 桌面宠物 刷新并选择。',
@@ -33,6 +36,9 @@ const __taskPetFactory = (require) => {
     refresh:'Refresh characters', restart:'Summon pet again', restarted:'Pet summoned again.',
     materials:'Add your own character', materialsHint:'Two paths: (1) ask your AI to generate a character locally (no foreign site needed); (2) download CC0/CC-BY art from the site below. Put the folder here, then refresh. Foreign sites may be slow or unreachable in some networks.',
     folder:'Local character folder', copy:'Copy AI installation instructions', copied:'Instructions copied.', website:'OpenGameArt (foreign) ↗', copyGenerate:'Copy AI generation prompt', copiedGenerate:'AI generation prompt copied.', websiteCn:'Asset index accessible in China ↗', websiteCnHint:'(third-party index; verify CC0/commercial license before use)', openFolder:'Reveal character folder in Finder', opened:'Revealed in Finder.',
+    motion:'Effects gallery', motionHint:'Each character’s custom working effect loops here. Characters without one use the default shuriken.',
+    customEffect:'Custom effect', defaultEffect:'Default effect', copyMotion:'Copy AI effect prompt', copiedMotion:'AI effect prompt copied.',
+    promptMotion:'Create a custom effect for a DSH Task Pet character. Character folder: {folder}/<character id>/. 1) Generate 4–8 transparent PNG frames with an image model or Python/Pillow (16–24px, looping, no character body), named fx_0.png etc.; 2) add an effects field to that character’s skin.json, e.g. {"effects":{"working":{"frames":["fx_0.png","fx_1.png"],"fps":10,"anchor":"right","scale":1.2},"success":{"builtin":"confetti"}}}; 3) do not change states or sprites, and keep files inside the character folder. Then ask me to refresh Settings → Desktop Pet; the effect appears in the Effects gallery and plays while the pet is working.',
     privacy:'Preferences stay on this machine. Conversation text is not uploaded. Check the licenses of third-party art and sounds.',
     unknown:'Unknown error', missing:'API authorization is missing. Reload this page or restart DSH.',
     promptGenerate:'Use an image model you can access, or Python/Pillow, to generate a DSH Task Pet character in {folder}/ai-pet/: transparent PNG pixel art (32–64px, integer-scaled), at least idle.png, working.png, success.png; create skin.json with name, author, license (AI-generated) and states, optionally per-state images. Only original characters, never copyrighted ones. Then ask me to refresh Settings → Desktop Pet and select it.',
@@ -71,6 +77,30 @@ const __taskPetFactory = (require) => {
    },[id]);
    return h('div',{className:'dtp-preview'},src ? h('img',{src,alt:''}) : h('span',{'aria-hidden':true},'◇'));
   }
+  function EffectPreview({ character, t }) {
+   const states = ['working','success','thinking','error'];
+   const state = states.find(name => character.effects?.[name]?.frames?.length);
+   const effect = state ? character.effects[state] : null;
+   const [urls,setUrls] = React.useState([]);
+   const [index,setIndex] = React.useState(0);
+   React.useEffect(() => {
+    if(!state) return undefined;
+    let alive = true; const created = [];
+    Promise.all(effect.frames.map((_,i) => fetch(`api/dsh-task-pet/effect-frame?id=${encodeURIComponent(character.id)}&state=${state}&frame=${i}`)
+      .then(r => r.ok ? r.blob() : null).then(b => b ? (u => (created.push(u), u))(URL.createObjectURL(b)) : null)))
+      .then(list => { const ok = list.filter(Boolean); if(alive) { setUrls(ok); setIndex(Math.min(2, Math.max(0, ok.length - 1))); } else ok.forEach(u => URL.revokeObjectURL(u)); })
+      .catch(() => {});
+    return () => { alive = false; created.forEach(u => URL.revokeObjectURL(u)); };
+   },[character.id,state]);
+   React.useEffect(() => {
+    if(urls.length < 2) return undefined;
+    const timer = setInterval(() => setIndex(i => (i + 1) % urls.length), Math.max(60, 1000 / (effect?.fps ?? 8)));
+    return () => clearInterval(timer);
+   },[urls,effect]);
+   if(!urls.length) return h('div',{className:'dtp-preview'},h('span',{className:'dtp-cardmeta'},effect?.builtin ?? t('defaultEffect')));
+   return h('div',{className:'dtp-preview'},h('img',{src:urls[index]||urls[0],alt:'',style:{imageRendering:'pixelated'}}));
+  }
+
   function SettingsPage({ t }) {
    const [data,setData]=React.useState(null), [draft,setDraft]=React.useState(null);
    const [busy,setBusy]=React.useState(false), [error,setError]=React.useState(''), [notice,setNotice]=React.useState('');
@@ -89,7 +119,11 @@ const __taskPetFactory = (require) => {
     } catch(e) { if(!lifetime.current?.signal.aborted)setError(e.message); }
     finally { if(!lifetime.current?.signal.aborted)setBusy(false); }
    }
-   async function copyPrompt(kind='install') { try { await navigator.clipboard.writeText(t(kind==='generate'?'promptGenerate':'prompt',{folder:data.folder}));setNotice(t(kind==='generate'?'copiedGenerate':'copied')); } catch(e) { setError(e.message); } }
+   async function copyPrompt(kind='install') {
+    const map = { install:['prompt','copied'], generate:['promptGenerate','copiedGenerate'], motion:['promptMotion','copiedMotion'] };
+    const [key, notice] = map[kind] ?? map.install;
+    try { await navigator.clipboard.writeText(t(key,{folder:data.folder})); setNotice(t(notice)); } catch(e) { setError(e.message); }
+   }
    const button=(label,fn,disabled=false,primary=false)=>h('button',{type:'button',className:'dtp-button',onClick:fn,disabled:disabled||busy,'data-primary':primary},label);
    if(!data) return h('section',{className:'dtp-page','aria-label':t('nav')},h('style',null,css),h('h2',null,t('title')),h('p',null,error?t('failed'):t('loading')),error&&h('p',{role:'alert',className:'dtp-error'},error),button(t('retry'),()=>act('refresh')));
    return h('section',{className:'dtp-page','data-task-pet-settings':true,'aria-busy':busy},
@@ -99,6 +133,10 @@ const __taskPetFactory = (require) => {
     h('div',{className:'dtp-block'},h('h3',null,t('characters')),h('p',{className:'dtp-muted'},t('characterHint')),
      h('div',{className:'dtp-cards'},data.characters.map(c=>h('button',{key:c.id,type:'button',className:'dtp-card','aria-pressed':draft.character===c.id,disabled:busy,onClick:()=>update({character:c.id})},h(Preview,{id:c.id}),h('span',{className:'dtp-cardname'},c.name),h('span',{className:'dtp-cardmeta'},draft.character===c.id?t('selected'):t(c.builtin?'builtin':'personal'))))),
      h('div',{className:'dtp-actions'},button(t('refresh'),()=>act('refresh'),dirty),button(t('restart'),()=>act('restart'),dirty))),
+    h('div',{className:'dtp-block'},h('h3',null,t('motion')),h('p',{className:'dtp-muted'},t('motionHint')),
+     h('div',{className:'dtp-cards'},data.characters.filter(c=>Object.keys(c.effects||{}).length).map(c=>h('div',{key:c.id,className:'dtp-card'},
+       h(EffectPreview,{character:c,t}),h('span',{className:'dtp-cardname'},c.name),h('span',{className:'dtp-cardmeta'},t(c.effects && Object.values(c.effects).some(e=>e.frames && e.frames.length)?'customEffect':'defaultEffect'))))),
+     h('div',{className:'dtp-actions'},button(t('copyMotion'),()=>copyPrompt('motion')))),
     h('div',{className:'dtp-block'},h('h3',null,t('appearance')),
      h('div',{className:'dtp-row'},h('div',null,h('label',{htmlFor:'dtp-scale'},t('size')),h('p',{className:'dtp-muted'},t('sizeHint'))),h('select',{id:'dtp-scale',value:draft.scale,disabled:busy,onChange:e=>update({scale:Number(e.target.value)})},[1,2,3,4,5,6].map(n=>h('option',{key:n,value:n},`${n}×`)))),
      h('div',{className:'dtp-row'},h('div',null,h('span',null,t('sound')),h('p',{className:'dtp-muted'},t('soundHint'))),h('button',{type:'button',role:'switch','aria-label':t('sound'),'aria-checked':!draft.muted,className:'dtp-switch',disabled:busy,onClick:()=>update({muted:!draft.muted})},h('span'))),
