@@ -17,7 +17,7 @@
  * that could resume an agent — this plugin is a pure observer.
  */
 
-import { spawn } from 'node:child_process';
+import { execFile, spawn } from 'node:child_process';
 import { randomBytes, timingSafeEqual } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { chmod, mkdir, unlink, writeFile } from 'node:fs/promises';
@@ -298,7 +298,7 @@ export async function apply(ctx) {
 	// Mount only once the browser carrier exists; on a cold profile our row can
 	// activate before the webServer row does.
 	ctx.inject(['webServer'], webCtx => {
-		const dispose = mountSettingsRoutes(webCtx, { settings, status, restart: restartPet, folder: CHARACTERS_DIR });
+		const dispose = mountSettingsRoutes(webCtx, { settings, status, restart: restartPet, folder: CHARACTERS_DIR, openFolder: () => new Promise((resolve, reject) => execFile('open', [CHARACTERS_DIR], error => (error ? reject(error) : resolve()))) });
 		webCtx.effect(() => dispose, 'task-pet: settings API');
 	});
 

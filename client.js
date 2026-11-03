@@ -15,7 +15,7 @@ const __taskPetFactory = (require) => {
     saveHint:'保存会短暂重启宠物。这里是启动偏好；右键和滚轮的临时调整在下次应用时以本页设置为准。',
     refresh:'刷新角色列表', restart:'重新召唤宠物', restarted:'已重新召唤宠物。',
     materials:'添加自己的角色', materialsHint:'先打开素材站或让你的 AI 创作角色，把皮肤文件夹放进下面的目录，再刷新列表。当前版本通过文件夹接入；网页上传将在后续加入。',
-    folder:'本机角色目录', copy:'复制给 AI 的安装指令', copied:'安装指令已复制。', website:'打开素材站 ↗',
+    folder:'本机角色目录', copy:'复制给 AI 的安装指令', copied:'安装指令已复制。', website:'打开素材站 ↗', openFolder:'在 Finder 中打开角色目录', opened:'已在 Finder 中打开。',
     privacy:'仅保存本机偏好，不上传对话正文。第三方角色与音效请自行确认使用许可。',
     unknown:'未知错误', missing:'缺少 API 授权，请刷新页面。若仍失败，请重启 DSH。',
     prompt:'请帮我安装 DSH Task Pet 的自定义像素角色。只使用我有权使用的透明 PNG 与音效，不执行素材包里的代码。把角色放在 {folder}/my-pet/，创建 skin.json（name、author、license、states.idle.sprite；可给 thinking、working、streaming、success、error、aborted、sleep、disconnected 指定 sprite，或 frames 数组和 fps）。所有文件路径必须在角色文件夹内。完成后让我在 设置 → 桌面宠物 点击“刷新角色列表”、选择角色并保存。不要自动修改其他 DSH 设置。',
@@ -31,7 +31,7 @@ const __taskPetFactory = (require) => {
     saveHint:'Saving briefly restarts the pet. These are startup preferences; temporary menu and scroll changes are replaced when you apply again.',
     refresh:'Refresh characters', restart:'Summon pet again', restarted:'Pet summoned again.',
     materials:'Add your own character', materialsHint:'Find permitted artwork or ask your AI to create it, put the skin folder below, then refresh. This version uses local folders; browser upload is not included yet.',
-    folder:'Local character folder', copy:'Copy AI installation instructions', copied:'Instructions copied.', website:'Open sprite website ↗',
+    folder:'Local character folder', copy:'Copy AI installation instructions', copied:'Instructions copied.', website:'Open sprite website ↗', openFolder:'Reveal character folder in Finder', opened:'Revealed in Finder.',
     privacy:'Preferences stay on this machine. Conversation text is not uploaded. Check the licenses of third-party art and sounds.',
     unknown:'Unknown error', missing:'API authorization is missing. Reload this page or restart DSH.',
     prompt:'Help me install a DSH Task Pet pixel character. Use only permitted transparent PNG images and sounds; never execute code from an asset pack. Put it in {folder}/my-pet/ and create skin.json (name, author, license, states.idle.sprite; optional thinking/working/streaming/success/error/aborted/sleep/disconnected sprite or frames and fps). All paths must stay inside that character folder. Then ask me to refresh Settings → Desktop Pet, select it and save. Do not alter other DSH preferences.',
@@ -82,6 +82,7 @@ const __taskPetFactory = (require) => {
     try {
      if(kind==='save') { const {version,...patch}=draft; await api('settings',patch,lifetime.current.signal); await load(lifetime.current.signal);setNotice(t('saved')); }
      else if(kind==='restart') { await api('restart',{},lifetime.current.signal);await load(lifetime.current.signal);setNotice(t('restarted')); }
+     else if(kind==='open-folder') { await api('open-folder',{},lifetime.current.signal);setNotice(t('opened')); }
      else await load(lifetime.current.signal);
     } catch(e) { if(!lifetime.current?.signal.aborted)setError(e.message); }
     finally { if(!lifetime.current?.signal.aborted)setBusy(false); }
@@ -101,7 +102,7 @@ const __taskPetFactory = (require) => {
      h('div',{className:'dtp-row'},h('div',null,h('span',null,t('sound')),h('p',{className:'dtp-muted'},t('soundHint'))),h('button',{type:'button',role:'switch','aria-label':t('sound'),'aria-checked':!draft.muted,className:'dtp-switch',disabled:busy,onClick:()=>update({muted:!draft.muted})},h('span'))),
      h('div',{className:'dtp-row'},h('div',null,h('label',{htmlFor:'dtp-duration'},t('duration')),h('p',{className:'dtp-muted'},t('durationHint'))),h('input',{id:'dtp-duration',type:'number',min:0,max:120,step:1,value:draft.completionBubbleMs/1000,disabled:busy,onChange:e=>update({completionBubbleMs:Number(e.target.value)*1000})})),
      h('div',{className:'dtp-actions'},button(t(busy?'saving':'save'),()=>act('save'),!dirty,true)),h('p',{className:'dtp-muted'},t('saveHint'))),
-    h('div',{className:'dtp-block'},h('h3',null,t('materials')),h('p',{className:'dtp-muted'},t('materialsHint')),h('p',{className:'dtp-muted'},t('folder')),h('code',{className:'dtp-path'},data.folder),h('div',{className:'dtp-actions'},button(t('copy'),copyPrompt),h('a',{className:'dtp-button',href:'https://www.spriters-resource.com/',target:'_blank',rel:'noopener noreferrer'},t('website')))),
+    h('div',{className:'dtp-block'},h('h3',null,t('materials')),h('p',{className:'dtp-muted'},t('materialsHint')),h('p',{className:'dtp-muted'},t('folder')),h('code',{className:'dtp-path'},data.folder),h('div',{className:'dtp-actions'},button(t('openFolder'),()=>act('open-folder')),button(t('copy'),copyPrompt),h('a',{className:'dtp-button',href:'https://www.spriters-resource.com/',target:'_blank',rel:'noopener noreferrer'},t('website')))),
     error&&h('p',{role:'alert',className:'dtp-error'},error),notice&&h('p',{role:'status',className:'dtp-notice'},notice),h('p',{className:'dtp-muted'},t('privacy')));
   }
   function WindowDragStrip() {
