@@ -142,3 +142,12 @@ npm test     # 15 项：事件折叠 + 设置存储/校验/并发/路径穿越
 源码放 GitHub 即可，别人让 AI 读 README 就能本地安装。npm 发布是可选项：注册 npm 账号后 `npm publish --access public`，别人可用包名安装；目前没有 npm 账号，先走 GitHub + `link:` 安装。
 
 English: a floating pixel desktop pet for DeepSeek Harness with live task status, a dedicated **Settings → Desktop Pet** page, and a drop-in character format (`~/.dsh/dsh-task-pet/characters/<id>/skin.json`). macOS Apple Silicon only for now; install from a local clone with `plugin_manager install_bundle` or `dsh plugin --profile desktop add link:<path>`.
+## License
+
+代码与内置占位角色以 MIT 协议开源，版权归 GHOOOME 所有；详见 [LICENSE](LICENSE)。
+
+`skins/` 下的个人角色（含第三方版权素材）不随仓库分发，也不在 MIT 授权范围内。
+
+MIT 的含义：任何人都可以免费使用、修改、分发本项目，甚至可以商用；唯一义务是保留版权声明和许可证文本，且作者不提供担保。你仍然是作者，只是允许别人使用。
+
+署名如需改成本名或其它名字，改 `LICENSE` 第一段的 `Copyright (c) 2026 GHOOOME` 这一行即可（`package.json` 的 `author` 字段同步改）。

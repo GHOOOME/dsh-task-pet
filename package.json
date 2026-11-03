@@ -38,5 +38,6 @@
         "@deepseek-ai/dsh-client-ui-settings-general"
       ]
     }
-  }
+  },
+  "author": "GHOOOME"
 }
