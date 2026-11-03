@@ -6,8 +6,16 @@
 
 > 核心定位是**进度提醒**：状态跟着任务实时变化，不是定时弹提醒。
 
-![内置角色·执行中](docs/pet-guard-working.png)
-![内置角色·完成](docs/pet-guard-success.png)
+![DSH 桌面进度宠物](docs/hero-greninja.png)
+
+<p align="center">
+  <img src="docs/greninja-working.png" width="46%" alt="执行中：实时工具与耗时" />
+  <img src="docs/greninja-success.png" width="46%" alt="完成：立刻撒花提醒" />
+</p>
+
+![状态一览：待机 / 思考 / 执行 / 完成 / 出错](docs/greninja-states.png)
+
+> 截图中的甲贺忍蛙为**个人自用素材**（`skins/` 不随仓库分发）；仓库内置的 11 个角色均为 CC0，可直接使用与分发。
 
 ## 它解决什么问题
 
@@ -66,6 +74,8 @@ DSH 右上角账号菜单 → **设置** → 左侧 **桌面宠物**。里面有
 | 动效展示 | 循环播放每个角色的自定义动效 |
 | 显示与提醒 | 角色大小 1–6×、完成提示音开关、完成气泡停留秒数 |
 | 添加自己的角色 | 角色目录、复制 AI 指令、打开 OpenGameArt / 国内可访问素材索引、在 Finder 打开目录 |
+
+![动效展示](docs/settings-effects.png)
 
 改完点「保存并应用」：只重启宠物进程（约 1 秒），正在跑的任务和对话都不受影响。
 
