@@ -14,10 +14,11 @@ const __taskPetFactory = (require) => {
     save:'保存并应用', saving:'正在应用…', saved:'已保存。宠物已重新载入，DSH 会话没有重启。',
     saveHint:'保存会短暂重启宠物。这里是启动偏好；右键和滚轮的临时调整在下次应用时以本页设置为准。',
     refresh:'刷新角色列表', restart:'重新召唤宠物', restarted:'已重新召唤宠物。',
-    materials:'添加自己的角色', materialsHint:'先打开 CC0/CC-BY 素材站或让你的 AI 创作角色，把皮肤文件夹放进下面的目录，再刷新列表。请只使用允许再分发的素材。',
-    folder:'本机角色目录', copy:'复制给 AI 的安装指令', copied:'安装指令已复制。', website:'打开 OpenGameArt ↗', openFolder:'在 Finder 中打开角色目录', opened:'已在 Finder 中打开。',
+    materials:'添加自己的角色', materialsHint:'两条路：① 让 AI 本地生成角色（不依赖外网）；② 打开素材站下载 CC0/CC-BY 素材。把文件夹放进下面的目录后刷新列表。境外站点网络可能不稳定。',
+    folder:'本机角色目录', copy:'复制给 AI 的安装指令', copied:'安装指令已复制。', website:'OpenGameArt（境外）↗', copyGenerate:'复制 AI 生成指令', copiedGenerate:'AI 生成指令已复制。', openFolder:'在 Finder 中打开角色目录', opened:'已在 Finder 中打开。',
     privacy:'仅保存本机偏好，不上传对话正文。第三方角色与音效请自行确认使用许可。',
     unknown:'未知错误', missing:'缺少 API 授权，请刷新页面。若仍失败，请重启 DSH。',
+    promptGenerate:'请用你能用的生图模型或 Python/Pillow，在 {folder}/ai-pet/ 里生成一套 DSH Task Pet 角色：透明背景 PNG 像素图（32–64px，整数倍放大显示），至少包含 idle.png、working.png、success.png；创建 skin.json，写明 name、author、license（注明 AI 生成）和 states，可给 thinking/error/sleep 等状态配图。只生成原创形象，不要复刻受版权保护的角色。完成后提示我在 设置 → 桌面宠物 刷新并选择。',
     prompt:'请帮我安装 DSH Task Pet 的自定义像素角色。只使用 CC0/CC-BY 或我有权使用的透明 PNG 与音效，不执行素材包里的代码；在 skin.json 记录 author 与 license。把角色放在 {folder}/my-pet/，创建 skin.json（name、author、license、states.idle.sprite；可给 thinking、working、streaming、success、error、aborted、sleep、disconnected 指定 sprite，或 frames 数组和 fps）。所有文件路径必须在角色文件夹内。完成后让我在 设置 → 桌面宠物 点击“刷新角色列表”、选择角色并保存。不要自动修改其他 DSH 设置。',
    },
    en: {
@@ -30,10 +31,11 @@ const __taskPetFactory = (require) => {
     saved:'Saved. Only the pet was reloaded; your DSH session kept running.',
     saveHint:'Saving briefly restarts the pet. These are startup preferences; temporary menu and scroll changes are replaced when you apply again.',
     refresh:'Refresh characters', restart:'Summon pet again', restarted:'Pet summoned again.',
-    materials:'Add your own character', materialsHint:'Find CC0/CC-BY artwork or ask your AI to create it, put the skin folder below, then refresh. Only use assets you may redistribute.',
-    folder:'Local character folder', copy:'Copy AI installation instructions', copied:'Instructions copied.', website:'Open OpenGameArt ↗', openFolder:'Reveal character folder in Finder', opened:'Revealed in Finder.',
+    materials:'Add your own character', materialsHint:'Two paths: (1) ask your AI to generate a character locally (no foreign site needed); (2) download CC0/CC-BY art from the site below. Put the folder here, then refresh. Foreign sites may be slow or unreachable in some networks.',
+    folder:'Local character folder', copy:'Copy AI installation instructions', copied:'Instructions copied.', website:'OpenGameArt (foreign) ↗', copyGenerate:'Copy AI generation prompt', copiedGenerate:'AI generation prompt copied.', openFolder:'Reveal character folder in Finder', opened:'Revealed in Finder.',
     privacy:'Preferences stay on this machine. Conversation text is not uploaded. Check the licenses of third-party art and sounds.',
     unknown:'Unknown error', missing:'API authorization is missing. Reload this page or restart DSH.',
+    promptGenerate:'Use an image model you can access, or Python/Pillow, to generate a DSH Task Pet character in {folder}/ai-pet/: transparent PNG pixel art (32–64px, integer-scaled), at least idle.png, working.png, success.png; create skin.json with name, author, license (AI-generated) and states, optionally per-state images. Only original characters, never copyrighted ones. Then ask me to refresh Settings → Desktop Pet and select it.',
     prompt:'Help me install a DSH Task Pet pixel character. Use only permitted transparent PNG images and sounds; never execute code from an asset pack. Put it in {folder}/my-pet/ and create skin.json (name, author, license, states.idle.sprite; optional thinking/working/streaming/success/error/aborted/sleep/disconnected sprite or frames and fps). All paths must stay inside that character folder. Then ask me to refresh Settings → Desktop Pet, select it and save. Do not alter other DSH preferences.',
    },
   };
@@ -87,7 +89,7 @@ const __taskPetFactory = (require) => {
     } catch(e) { if(!lifetime.current?.signal.aborted)setError(e.message); }
     finally { if(!lifetime.current?.signal.aborted)setBusy(false); }
    }
-   async function copyPrompt() { try { await navigator.clipboard.writeText(t('prompt',{folder:data.folder}));setNotice(t('copied')); } catch(e) { setError(e.message); } }
+   async function copyPrompt(kind='install') { try { await navigator.clipboard.writeText(t(kind==='generate'?'promptGenerate':'prompt',{folder:data.folder}));setNotice(t(kind==='generate'?'copiedGenerate':'copied')); } catch(e) { setError(e.message); } }
    const button=(label,fn,disabled=false,primary=false)=>h('button',{type:'button',className:'dtp-button',onClick:fn,disabled:disabled||busy,'data-primary':primary},label);
    if(!data) return h('section',{className:'dtp-page','aria-label':t('nav')},h('style',null,css),h('h2',null,t('title')),h('p',null,error?t('failed'):t('loading')),error&&h('p',{role:'alert',className:'dtp-error'},error),button(t('retry'),()=>act('refresh')));
    return h('section',{className:'dtp-page','data-task-pet-settings':true,'aria-busy':busy},
@@ -102,7 +104,7 @@ const __taskPetFactory = (require) => {
      h('div',{className:'dtp-row'},h('div',null,h('span',null,t('sound')),h('p',{className:'dtp-muted'},t('soundHint'))),h('button',{type:'button',role:'switch','aria-label':t('sound'),'aria-checked':!draft.muted,className:'dtp-switch',disabled:busy,onClick:()=>update({muted:!draft.muted})},h('span'))),
      h('div',{className:'dtp-row'},h('div',null,h('label',{htmlFor:'dtp-duration'},t('duration')),h('p',{className:'dtp-muted'},t('durationHint'))),h('input',{id:'dtp-duration',type:'number',min:0,max:120,step:1,value:draft.completionBubbleMs/1000,disabled:busy,onChange:e=>update({completionBubbleMs:Number(e.target.value)*1000})})),
      h('div',{className:'dtp-actions'},button(t(busy?'saving':'save'),()=>act('save'),!dirty,true)),h('p',{className:'dtp-muted'},t('saveHint'))),
-    h('div',{className:'dtp-block'},h('h3',null,t('materials')),h('p',{className:'dtp-muted'},t('materialsHint')),h('p',{className:'dtp-muted'},t('folder')),h('code',{className:'dtp-path'},data.folder),h('div',{className:'dtp-actions'},button(t('openFolder'),()=>act('open-folder')),button(t('copy'),copyPrompt),h('a',{className:'dtp-button',href:'https://opengameart.org/',target:'_blank',rel:'noopener noreferrer'},t('website')))),
+    h('div',{className:'dtp-block'},h('h3',null,t('materials')),h('p',{className:'dtp-muted'},t('materialsHint')),h('p',{className:'dtp-muted'},t('folder')),h('code',{className:'dtp-path'},data.folder),h('div',{className:'dtp-actions'},button(t('openFolder'),()=>act('open-folder')),button(t('copy'),()=>copyPrompt('install')),button(t('copyGenerate'),()=>copyPrompt('generate')),h('a',{className:'dtp-button',href:'https://opengameart.org/',target:'_blank',rel:'noopener noreferrer'},t('website')))),
     error&&h('p',{role:'alert',className:'dtp-error'},error),notice&&h('p',{role:'status',className:'dtp-notice'},notice),h('p',{className:'dtp-muted'},t('privacy')));
   }
   function WindowDragStrip() {

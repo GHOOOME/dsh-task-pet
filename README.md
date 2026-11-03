@@ -82,13 +82,15 @@ dsh plugin --profile desktop add link:/绝对路径/dsh-task-pet
 
 ### 素材站怎么选
 
-插件默认链接的是 [OpenGameArt](https://opengameart.org/)（国外，CC0/CC-BY 游戏素材）和 [Kenney](https://kenney.nl/assets)（国外，CC0）。**不要**用 The Spriters Resource、PokéDB Sprites 这类拆包游戏素材站来制作要分发的角色——它们托管的是版权作品，公开推荐或再分发有侵权风险。
+插件默认链接的是 [OpenGameArt](https://opengameart.org/)（国外，CC0/CC-BY 游戏素材）和 [Kenney](https://kenney.nl/assets)（国外，CC0）。**这两个都是境外站点，国内网络下不保证稳定可用**（实测 OpenGameArt 可打开但较慢；Kenney 可能被反爬；itch.io 经常超时）。所以设置页同时提供「复制 AI 生成指令」——让 AI 用生图模型或 Python/Pillow 在本机生成角色，完全不依赖外网。**不要**用 The Spriters Resource、PokéDB Sprites 这类拆包游戏素材站来制作要分发的角色——它们托管的是版权作品，公开推荐或再分发有侵权风险。
 
 关于"只放链接"是否侵权：单纯链接到网站首页通常不构成复制或传播作品，但如果明知站点内容是盗用素材、还引导用户下载，存在"帮助侵权"的风险，开源项目里公开推荐也不合适。所以默认只放授权清晰的站点。
 
 国内素材站（爱给网、千图等）并非专门面向游戏像素角色，且免费区授权条款各不相同，使用前必须逐个确认是否允许再分发；没有确认前不要放进角色包或公开推荐。
 
 **素材版权由角色作者自行负责**：只使用 CC0/CC-BY 或你拥有权利的图片和音效，并在 `skin.json` 的 `author` / `license` 字段写清楚。
+
+网络受限时推荐顺序：① AI 本地生成 → ② 本机已有素材 → ③ 能访问的 CC0/CC-BY 素材站。素材站只是可选入口，不是必需步骤。
 
 ## 设置页
 
