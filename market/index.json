@@ -1,0 +1,63 @@
+{
+  "format": 1,
+  "title": "dsh-task-pet 插件索引",
+  "description": "DSH 桌面进度宠物：实时显示任务进度，完成立刻提醒。",
+  "metadata": {
+    "categories": {
+      "desktop-pet": {
+        "title": "桌面宠物"
+      }
+    },
+    "labels": {
+      "pixel-art": {
+        "title": "像素风"
+      },
+      "progress": {
+        "title": "进度提醒"
+      }
+    },
+    "sortKeys": {}
+  },
+  "plugins": [
+    {
+      "name": "dsh-task-pet",
+      "title": "DSH 桌面进度宠物",
+      "description": "浮在最上层的像素桌宠，实时显示 DSH 任务进度，完成立刻撒花提醒；支持自定义角色与动效。",
+      "icon": "https://raw.githubusercontent.com/GHOOOME/dsh-task-pet/main/icon.svg",
+      "author": "GHOOOME",
+      "homepage": "https://github.com/GHOOOME/dsh-task-pet",
+      "repository": {
+        "url": "https://github.com/GHOOOME/dsh-task-pet"
+      },
+      "metadata": {
+        "category": "desktop-pet",
+        "keywords": [
+          "desktop pet",
+          "progress",
+          "notify",
+          "pixel art",
+          "macos"
+        ],
+        "labels": [
+          "pixel-art",
+          "progress"
+        ],
+        "sortKeys": {}
+      },
+      "versions": [
+        {
+          "version": "0.3.0",
+          "publishTimestamp": 1793704782,
+          "source": {
+            "type": "git",
+            "url": "https://github.com/GHOOOME/dsh-task-pet",
+            "commit": "5a6c9ab908c8cc713f2ba0f4fac53774e6a24044"
+          },
+          "engines": {
+            "dsh": "^0.2.1-rc.5"
+          }
+        }
+      ]
+    }
+  ]
+}

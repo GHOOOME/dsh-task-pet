@@ -62,6 +62,19 @@ dsh plugin --profile desktop add link:$PWD
 
 > 目前只支持 macOS Apple Silicon；Windows / Linux / Intel Mac 暂无宠物窗口（Host 侧桥接仍可运行）。npm 暂未发布，安装走 GitHub + 本地路径。
 
+### 通过插件市场安装（实验性）
+
+DSH 的插件市场是**实验性、去中心化**的：没有官方中心商店，索引地址由用户自己添加。启用方式：
+
+1. 侧边栏 **Plugins** → **More**（Experimental plugins 旁）→ 打开 **Custom plugin markets**；
+2. 页面出现 **Discover** 标签 → 添加索引地址：
+   `https://raw.githubusercontent.com/GHOOOME/dsh-task-pet/main/market/index.json`
+3. 搜索 **dsh-task-pet** → 安装（市场按 commit 固定版本从 GitHub 拉取，不会跟踪未发布的改动）。
+
+索引文件在 [`market/index.json`](market/index.json)，遵循 DSH 的 format 1；仓库更新后需要同步索引里的 commit。
+
+> 市场目前也不提供安装量统计，所以「有多少人在用」无法从市场得知。
+
 ## 使用
 
 ### 打开设置
