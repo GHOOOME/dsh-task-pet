@@ -39,5 +39,13 @@
       ]
     }
   },
-  "author": "GHOOOME"
+  "author": "GHOOOME",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GHOOOME/dsh-greninja-pet.git"
+  },
+  "homepage": "https://github.com/GHOOOME/dsh-greninja-pet#readme",
+  "bugs": {
+    "url": "https://github.com/GHOOOME/dsh-greninja-pet/issues"
+  }
 }
