@@ -75,6 +75,22 @@ DSH 的插件市场是**实验性、去中心化**的：没有官方中心商店
 
 > 市场目前也不提供安装量统计，所以「有多少人在用」无法从市场得知。
 
+## 把仓库发给别人
+
+对方只需要把仓库地址交给他的 AI，粘贴这段即可（AI 会读 README 自己完成）：
+
+```
+请帮我安装 DSH 桌面进度宠物：https://github.com/GHOOOME/dsh-task-pet
+1) git clone 到本地（建议 ~/Documents/dsh-task-pet）；
+2) 进入目录运行 ./pet/build.sh（本机编译原生宠物；仓库已带 arm64 产物，编译失败可跳过）；
+3) 用 plugin_manager 的 install_bundle，target 传该目录的绝对路径；
+4) 提醒我完整退出并重启一次 DSH 桌面端；
+5) 重启后确认 设置 → 桌面宠物 出现，并帮我选一个内置角色。
+不要修改其他插件或系统设置。
+```
+
+不想让 AI 动手的话，手动三步：`git clone` → `./pet/build.sh` → `dsh plugin --profile desktop add link:$PWD`，然后完整重启 DSH。
+
 ## 使用
 
 ### 打开设置
