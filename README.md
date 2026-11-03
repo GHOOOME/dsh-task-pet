@@ -158,6 +158,10 @@ my-pet/
 - `anchor`：`right`（默认）/`left`/`above`/`below`/`center`；`scale` 是像素倍率倍数；`offset` 是相对角色的像素偏移；
 - 示例：[examples/custom-effects](examples/custom-effects)。
 
+内置角色自带的主题动效（卫兵火花 / 剑斩 / 符文 / 花瓣 / 冲击环 / 暗影 / 泡泡）：
+
+![内置角色主题动效](docs/pet-effects.png)
+
 ### 让 AI 帮你做角色 / 动效
 
 设置页有两个复制按钮，把指令粘给你的 AI 即可：
