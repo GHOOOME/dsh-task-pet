@@ -7,6 +7,9 @@ const __taskPetFactory = (require) => {
    zh: {
     nav:'桌面宠物', title:'DSH Task Pet', intro:'用你喜欢的像素角色，实时看见任务在做什么。',
     loading:'正在读取宠物设置…', failed:'设置暂时无法读取', retry:'重试', running:'宠物运行中', stopped:'宠物未运行',
+    startPet:'启动宠物', reasonQuit:'已手动退出，点「启动宠物」重新召唤。', reasonCrash:'宠物意外退出，可点「启动宠物」重试。',
+    reasonCrashLimit:'多次启动失败，已暂停自动重试；点「启动宠物」重置并再试一次。', reasonSpawnFailed:'启动失败，请检查宠物程序或角色文件。',
+    reasonPlatform:'当前平台不支持原生宠物（需要 macOS Apple Silicon）。', reasonDisabled:'宠物已被环境变量 DSH_TASK_PET_DISABLE 禁用。',
     characters:'我的角色', characterHint:'选择已安装角色。未配置的动作沿用该角色的待机素材。', builtin:'内置角色', personal:'本机角色', selected:'已选择',
     appearance:'显示与提醒', size:'角色大小', sizeHint:'1–6 倍像素倍率；气泡保持可读字号。位置仍可直接拖动调整。',
     sound:'完成提示音', soundHint:'只有角色包包含音效时才会播放；不用系统通知权限。',
@@ -27,6 +30,9 @@ const __taskPetFactory = (require) => {
    en: {
     nav:'Desktop Pet', title:'DSH Task Pet', intro:'Your pixel companion, showing what the task is doing in real time.',
     loading:'Loading pet preferences…', failed:'Could not load settings', retry:'Retry', running:'Pet running', stopped:'Pet not running',
+    startPet:'Start pet', reasonQuit:'You quit the pet; click Start to summon it again.', reasonCrash:'The pet exited unexpectedly; click Start to retry.',
+    reasonCrashLimit:'Too many failed starts; automatic retry is paused. Click Start to reset and try again.', reasonSpawnFailed:'Failed to start; check the pet binary or character files.',
+    reasonPlatform:'Native pet needs macOS Apple Silicon.', reasonDisabled:'Pet is disabled by DSH_TASK_PET_DISABLE.',
     characters:'My characters', characterHint:'Choose an installed character. Missing actions fall back to its idle artwork.', builtin:'Built in', personal:'Local character', selected:'Selected',
     appearance:'Display and alerts', size:'Character size', sizeHint:'1–6× pixel scale. The speech bubble keeps a readable font size. Drag the pet to move it.',
     sound:'Completion sound', soundHint:'Requires audio in the character pack; no OS notification permission needed.',
@@ -47,7 +53,7 @@ const __taskPetFactory = (require) => {
   };
   const css = `
   .dtp-page{max-width:760px;color:var(--dsw-alias-label-primary);font-size:14px;line-height:1.5;padding-bottom:24px}
-  .dtp-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:24px}.dtp-page h2{margin:0;font-size:20px;font-weight:600}.dtp-page h3{margin:0 0 6px;font-size:14px;font-weight:600}
+  .dtp-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:24px}.dtp-page h2{margin:0;font-size:20px;font-weight:600}.dtp-topside{display:flex;align-items:center;gap:8px}.dtp-page h3{margin:0 0 6px;font-size:14px;font-weight:600}
   .dtp-muted{color:var(--dsw-alias-label-secondary);font-size:12px;margin:6px 0 12px}.dtp-status{font-size:12px;white-space:nowrap;padding:5px 9px;background:var(--dsw-alias-bg-layer-2);border-radius:8px}.dtp-status[data-running=true]{color:var(--dsw-alias-state-success-primary)}
   .dtp-block{padding:20px 0;border-bottom:.5px solid var(--dsw-alias-border-l2)}.dtp-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}.dtp-card{cursor:pointer;text-align:left;color:inherit;background:var(--dsw-alias-bg-layer-1);border:1px solid var(--dsw-alias-border-l2);border-radius:12px;padding:12px;min-width:0}.dtp-card[aria-pressed=true]{border-color:var(--dsw-alias-brand-primary);background:var(--dsw-alias-interactive-bg-active)}
   .dtp-preview{height:78px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;background:var(--dsw-alias-bg-layer-2);border-radius:8px}.dtp-preview img{max-width:100%;max-height:70px;image-rendering:pixelated}.dtp-cardname{display:block;overflow-wrap:anywhere;font-size:13px}.dtp-cardmeta{display:block;font-size:11px;color:var(--dsw-alias-label-secondary);margin-top:5px}
@@ -103,10 +109,17 @@ const __taskPetFactory = (require) => {
 
   function SettingsPage({ t }) {
    const [data,setData]=React.useState(null), [draft,setDraft]=React.useState(null);
+   const [live,setLive]=React.useState(null);
    const [busy,setBusy]=React.useState(false), [error,setError]=React.useState(''), [notice,setNotice]=React.useState('');
    const lifetime=React.useRef(null);
    async function load(signal) { const next=await api('info',undefined,signal); setData(next);setDraft(next.settings); }
    React.useEffect(() => { const c=new AbortController(); lifetime.current=c; load(c.signal).catch(e=>{if(!c.signal.aborted)setError(e.message);});return()=>c.abort(); },[]);
+   React.useEffect(() => {
+    const timer = setInterval(() => {
+     api('status').then(result => setLive(result.status)).catch(() => {});
+    }, 4000);
+    return () => clearInterval(timer);
+   },[]);
    const dirty=!!data && JSON.stringify(draft)!==JSON.stringify(data.settings);
    const update=patch=>{setDraft(v=>({...v,...patch}));setNotice('');};
    async function act(kind) {
@@ -117,7 +130,7 @@ const __taskPetFactory = (require) => {
      else if(kind==='open-folder') { await api('open-folder',{},lifetime.current.signal);setNotice(t('opened')); }
      else await load(lifetime.current.signal);
     } catch(e) { if(!lifetime.current?.signal.aborted)setError(e.message); }
-    finally { if(!lifetime.current?.signal.aborted)setBusy(false); }
+    finally { if(!lifetime.current?.signal.aborted){ setLive(null); setBusy(false); } }
    }
    async function copyPrompt(kind='install') {
     const map = { install:['prompt','copied'], generate:['promptGenerate','copiedGenerate'], motion:['promptMotion','copiedMotion'] };
@@ -125,14 +138,27 @@ const __taskPetFactory = (require) => {
     try { await navigator.clipboard.writeText(t(key,{folder:data.folder})); setNotice(t(notice)); } catch(e) { setError(e.message); }
    }
    const button=(label,fn,disabled=false,primary=false)=>h('button',{type:'button',className:'dtp-button',onClick:fn,disabled:disabled||busy,'data-primary':primary},label);
+   const status = live ?? data?.status ?? { running:false };
+   const reasonKey = status => {
+    if(status.envDisabled) return 'reasonDisabled';
+    const reason = status.lastExit?.reason;
+    if(reason==='quit') return 'reasonQuit';
+    if(reason==='crash-limit') return 'reasonCrashLimit';
+    if(reason==='crash'||reason==='spawn-failed') return 'reasonSpawnFailed';
+    if(reason==='unsupported-platform') return 'reasonPlatform';
+    return null;
+   };
    if(!data) return h('section',{className:'dtp-page','aria-label':t('nav')},h('style',null,css),h('h2',null,t('title')),h('p',null,error?t('failed'):t('loading')),error&&h('p',{role:'alert',className:'dtp-error'},error),button(t('retry'),()=>act('refresh')));
    return h('section',{className:'dtp-page','data-task-pet-settings':true,'aria-busy':busy},
     h('style',null,css),
-    h('div',{className:'dtp-top'},h('div',null,h('h2',null,t('title')),h('p',{className:'dtp-muted'},t('intro'))),h('span',{className:'dtp-status','data-running':data.status.running},t(data.status.running?'running':'stopped'))),
-    data.status.error&&h('p',{className:'dtp-error',role:'alert'},data.status.error),
+    h('div',{className:'dtp-top'},h('div',null,h('h2',null,t('title')),h('p',{className:'dtp-muted'},t('intro'))),
+     h('div',{className:'dtp-topside'},h('span',{className:'dtp-status','data-running':status.running},t(status.running?'running':'stopped')),
+      !status.running&&button(t('startPet'),()=>act('restart'),false,true))),
+    !status.running&&reasonKey(status)&&h('p',{className:'dtp-muted'},t(reasonKey(status))),
+    status.error&&h('p',{className:'dtp-error',role:'alert'},status.error),
     h('div',{className:'dtp-block'},h('h3',null,t('characters')),h('p',{className:'dtp-muted'},t('characterHint')),
      h('div',{className:'dtp-cards'},data.characters.map(c=>h('button',{key:c.id,type:'button',className:'dtp-card','aria-pressed':draft.character===c.id,disabled:busy,onClick:()=>update({character:c.id})},h(Preview,{id:c.id}),h('span',{className:'dtp-cardname'},c.name),h('span',{className:'dtp-cardmeta'},draft.character===c.id?t('selected'):t(c.builtin?'builtin':'personal'))))),
-     h('div',{className:'dtp-actions'},button(t('refresh'),()=>act('refresh'),dirty),button(t('restart'),()=>act('restart'),dirty))),
+     h('div',{className:'dtp-actions'},button(t('refresh'),()=>act('refresh'),dirty),button(t('restart'),()=>act('restart')))),
     h('div',{className:'dtp-block'},h('h3',null,t('motion')),h('p',{className:'dtp-muted'},t('motionHint')),
      h('div',{className:'dtp-cards'},data.characters.filter(c=>Object.keys(c.effects||{}).length).map(c=>h('div',{key:c.id,className:'dtp-card'},
        h(EffectPreview,{character:c,t}),h('span',{className:'dtp-cardname'},c.name),h('span',{className:'dtp-cardmeta'},t(c.effects && Object.values(c.effects).some(e=>e.frames && e.frames.length)?'customEffect':'defaultEffect'))))),

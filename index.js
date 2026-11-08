@@ -116,6 +116,8 @@ export async function apply(ctx) {
 	let settings;
 	let selectedSkin;
 	let stopping = false;
+	let lastExit = null;
+	let petStartedAt = 0;
 
 	/** Late timer that is cleared on dispose. */
 	const later = (callback, delay) => {
@@ -237,16 +239,29 @@ export async function apply(ctx) {
 	/** Spawn the desktop pet, retrying a limited number of times on crashes. */
 	const spawnPet = () => {
 		if (disposed || stopping || process.env.DSH_GRENINJA_PET_DISABLE === '1') return;
-		if (process.platform !== 'darwin' || process.arch !== 'arm64') { lastError = 'This build supports Apple Silicon macOS only'; return; }
+		if (process.platform !== 'darwin' || process.arch !== 'arm64') {
+			lastError = 'This build supports Apple Silicon macOS only';
+			lastExit = { reason: 'unsupported-platform', at: Date.now() };
+			return;
+		}
 		const binary = petBinary();
 		if (!existsSync(binary)) {
+			lastError = `Pet binary missing: ${binary}`;
+			lastExit = { reason: 'spawn-failed', at: Date.now() };
 			console.warn('[task-pet] pet binary missing; run pet/build.sh first:', binary);
 			return;
 		}
-		if (spawnCount >= MAX_SPAWNS) return;
-		spawnCount += 1;
+		if (spawnCount >= MAX_SPAWNS) {
+			lastExit = { reason: 'crash-limit', at: Date.now(), attempts: spawnCount };
+			return;
+		}
 		const skin = selectedSkin;
-		if (!skin) return;
+		if (!skin) {
+			lastError = 'No skin selected; choose a character first';
+			lastExit = { reason: 'spawn-failed', at: Date.now() };
+			return;
+		}
+		spawnCount += 1;
 		const args = [
 			'--port', String(port),
 			'--token', token,
@@ -257,6 +272,7 @@ export async function apply(ctx) {
 		const env = { ...process.env, DSH_TASK_PET_MUTED: String(prefs.muted), DSH_GRENINJA_PET_COMPLETION_MS: String(prefs.completionBubbleMs) };
 		const proc = spawn(binary, args, { stdio: 'ignore', detached: false, env });
 		child = proc;
+		petStartedAt = Date.now();
 		proc.on('error', error => {
 			lastError = String(error?.message ?? error);
 			console.warn('[task-pet] cannot start pet:', lastError);
@@ -264,8 +280,12 @@ export async function apply(ctx) {
 		proc.on('exit', (code, signal) => {
 			if (child === proc) child = null;
 			if (disposed || stopping) return;
-			// A clean exit is the user quitting the pet on purpose; respect it.
-			if (code === 0 || signal === 'SIGTERM' || signal === 'SIGKILL') return;
+			if (Date.now() - petStartedAt > 60_000) spawnCount = 0;
+			// A clean exit (or our own SIGTERM) is the user quitting on purpose: stop
+			// auto-respawning, but keep manual restart available in Settings.
+			const quit = code === 0 || signal === 'SIGTERM' || signal === 'SIGKILL';
+			lastExit = { at: Date.now(), code, signal, reason: quit ? 'quit' : 'crash' };
+			if (quit) return;
 			later(() => spawnPet(), 2000);
 		});
 	};
@@ -287,6 +307,7 @@ export async function apply(ctx) {
 		spawnCount = 0;
 		stopping = false;
 		lastError = null;
+		lastExit = null;
 		spawnPet();
 	};
 	await seedCharacters(BUNDLED_CHARACTERS_DIR, CHARACTERS_DIR);
@@ -296,7 +317,15 @@ export async function apply(ctx) {
 		onApply: restartPet,
 	});
 	selectedSkin = await settings.skinDir();
-	const status = () => ({ running: !!child && child.exitCode === null && child.signalCode === null, platform: process.platform, arch: process.arch, error: lastError });
+	const status = () => ({
+		running: !!child && child.exitCode === null && child.signalCode === null,
+		platform: process.platform,
+		arch: process.arch,
+		error: lastError,
+		attempts: spawnCount,
+		lastExit,
+		envDisabled: process.env.DSH_GRENINJA_PET_DISABLE === '1',
+	});
 	// Mount only once the browser carrier exists; on a cold profile our row can
 	// activate before the webServer row does.
 	ctx.inject(['webServer'], webCtx => {
